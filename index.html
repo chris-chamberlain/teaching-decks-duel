@@ -1917,10 +1917,19 @@ function actionBar() {
   if (G.mode === 'puzzle') b.push(btn('pzReset', 'Reset'));
   return '<div class="acts">' + b.join('') + '</div>';
 }
+var TYPE_ORD = { land: 0, creature: 1, pw: 2, artifact: 3, ench: 4, aura: 4, instant: 5, sorcery: 6 };
+function mv(cost) { var n = 0, num = ''; for (var k = 0; k < cost.length; k++) { var c = cost[k]; if (c >= '0' && c <= '9') num += c; else { n += num ? parseInt(num, 10) : 0; num = ''; if (c !== 'X') n++; } } return n + (num ? parseInt(num, 10) : 0); }
+function sortedHand(hand) {
+  return hand.slice().sort(function (a, b) {
+    var da = Dd(a), db = Dd(b), ta = TYPE_ORD[da.t], tb = TYPE_ORD[db.t];
+    ta = ta == null ? 9 : ta; tb = tb == null ? 9 : tb;
+    return ta - tb || mv(da.cost) - mv(db.cost) || (da.n < db.n ? -1 : da.n > db.n ? 1 : 0) || a - b;
+  });
+}
 function handHTML() {
   var P = G.p[me()];
   if (!P.hand.length) return '<div class="hand"><div class="empty">Your hand is empty.</div></div>';
-  return '<div class="hand">' + P.hand.map(function (u) {
+  return '<div class="hand">' + sortedHand(P.hand).map(function (u) {
     var ok = !U.cover && castableOrAbil(u);
     var tg = G.pend && myPend() && myPend().k === 'pickcard' && 0;
     return cardHTML(u, 'md', { cls: [ok ? 'ok' : (myTurn() ? '' : 'dim')], act: 'hand' });
@@ -2055,7 +2064,7 @@ function sheetPend(pd) {
 function sheetMull() {
   var P = G.p[me()];
   return '<div class="bk"></div><div class="sh"><h3>Opening hand</h3><p class="stat">' + (P.mull ? 'Mulligan ' + P.mull + ' · ' : '') + 'Keep ' + P.hand.length + ' cards?</p><div class="grid">' +
-    P.hand.map(function (u) { return cardHTML(u, 'md', { act: 'none' }); }).join('') + '</div><div class="stack"><button class="btn pri" data-act="keep">Keep</button>' +
+    sortedHand(P.hand).map(function (u) { return cardHTML(u, 'md', { act: 'none' }); }).join('') + '</div><div class="stack"><button class="btn pri" data-act="keep">Keep</button>' +
     (P.mull < 4 ? '<button class="btn" data-act="mull">Mulligan to ' + (6 - P.mull) + '</button>' : '') + '</div></div>';
 }
 function sheetOver() {
