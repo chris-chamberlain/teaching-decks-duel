@@ -2247,7 +2247,7 @@ function sheetTutDone() {
   var tr = U.tutKind === 'tour';
   var items = tr ? ['A turn has phases: Main 1, Combat, Main 2, End.', 'You untap and draw at the start of your turn.', 'Play one land per turn, then pay mana to cast spells.', 'A tapped card is turned sideways. Tapping a land adds mana.', 'In combat you declare attackers, the other player declares blockers, then damage is dealt.', 'At 0 life you lose.']
     : ['Lands give you mana when you tap them.', 'Mana pays for creatures and spells.', 'A new creature has summoning sickness and cannot attack yet.', 'Attackers can be blocked.', 'An instant cast during combat, after attackers are declared, is a combat trick. Giant Growth is one.'];
-  return '<div class="bk"></div><div class="sh"><h3>' + (tr ? 'Now you know the screen!' : 'You did it!') + '</h3><ul class="ol" style="padding-left:20px">' + items.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>' +
+  return '<div class="bk"></div><div class="sh"><h3>' + (tr ? 'Tour complete' : 'Practice complete') + '</h3><ul class="ol" style="padding-left:20px">' + items.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>' +
     '<div class="stack">' + (tr ? '<button class="btn pri" data-act="goTutorial">Practice: your first turns</button>' : '<button class="btn pri" data-act="goLocal">Play a game on one device</button>') + '<button class="btn" data-act="tutAgain">Do this again</button><button class="btn ghost" data-act="leave">Back to menu</button></div></div>';
 }
 
@@ -3029,20 +3029,20 @@ function vHome() {
   var saved = ls('mtg-room');
   var on = U.net.ready;
   var snd2 = '<div class="row2"><button class="btn ghost sm2" data-act="toggleMusic">Music ' + (SND.musicOn ? 'on' : 'off') + '</button><button class="btn ghost sm2" data-act="toggleSfx">Effects ' + (SND.sfxOn ? 'on' : 'off') + '</button></div>';
-  return '<div class="scr"><div class="logo">Teaching Decks <b>Duel</b></div><p class="sub">Two players, five starter decks, full turns.</p><div class="gems"><i class="gem W"></i><i class="gem U"></i><i class="gem B"></i><i class="gem R"></i><i class="gem G"></i></div>' +
+  return '<div class="scr"><div class="logo">Teaching Decks <b>Duel</b></div><div class="gems"><i class="gem W"></i><i class="gem U"></i><i class="gem B"></i><i class="gem R"></i><i class="gem G"></i></div>' +
     '<div class="lbl" style="margin-top:0">Your name</div><input class="txt" id="nm" maxlength="14" value="' + esc(U.name) + '" placeholder="Name">' +
     (saved && on ? '<div class="stack" style="margin-top:18px"><button class="btn pri" data-act="resume" data-c="' + esc(saved) + '">Resume game ' + esc(saved) + '</button></div>' : '') +
     '<div class="lbl">Learn</div><div class="stack">' +
-    '<button class="btn menu2 ' + (saved && on ? '' : 'pri') + '" data-act="goTour">Tour: the screen and a turn<small>A quick walk around the table</small></button>' +
-    '<button class="btn menu2" data-act="goTutorial">Practice: your first turns<small>Play a guided game against the apprentice</small></button></div>' +
+    '<button class="btn menu2 ' + (saved && on ? '' : 'pri') + '" data-act="goTour">Tour: the screen and a turn</button>' +
+    '<button class="btn menu2" data-act="goTutorial">Practice: your first turns</button></div>' +
     '<div class="lbl">Play</div><div class="stack">' +
-    '<button class="btn menu2" data-act="goLocal">One device, take turns<small>Two duelists, one table</small></button>' +
-    '<button class="btn menu2' + (on ? '' : ' dis') + '" data-act="newOnline">Host a game (two devices)<small>Share a four-letter code</small></button>' +
-    '<button class="btn menu2' + (on ? '' : ' dis') + '" data-act="goJoin">Join with a code<small>Enter the code from your opponent</small></button>' +
+    '<button class="btn menu2" data-act="goLocal">One device, take turns</button>' +
+    '<button class="btn menu2' + (on ? '' : ' dis') + '" data-act="newOnline">Host a game (two devices)</button>' +
+    '<button class="btn menu2' + (on ? '' : ' dis') + '" data-act="goJoin">Join with a code</button>' +
     (on ? '' : '<div class="note">' + (U.net.tried ? 'Two-device play is not available in this view. Open the artifact from the Claude app while signed in, and make sure your son has edit access.' : 'Connecting to two-device play…') + '</div>') + '</div>' +
     '<div class="lbl">More</div><div class="stack">' +
-    '<button class="btn menu2" data-act="goPuzzles">Puzzles<small>Attacking and blocking riddles</small></button>' +
-    '<button class="btn menu2" data-act="goLearn">Learn the decks<small>Meet the five starter decks</small></button>' + snd2 + '</div></div>';
+    '<button class="btn menu2" data-act="goPuzzles">Puzzles</button>' +
+    '<button class="btn menu2" data-act="goLearn">Learn the decks</button>' + snd2 + '</div></div>';
 }
 function vJoin() {
   return '<div class="scr"><button class="back" data-act="home">‹ Back</button><div class="logo">Join a game</div><p class="sub">Type the 4-letter code shown on the other device.</p>' +
