@@ -3,6 +3,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
+<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Teaching Decks Duel">
 <meta name="color-scheme" content="dark">
@@ -489,6 +490,10 @@ input.code{text-transform:uppercase;letter-spacing:.35em;text-align:center;font-
 .arena .hc{transition:bottom .2s ease,left .35s ease}
 .arena.ls .bf.mine .lrow{padding-left:4px;padding-bottom:122px}
 .arena.pt .bf.mine .lrow{padding-left:4px;padding-bottom:78px}
+.arena .pile.shuf{animation:shuf .45s ease-in-out infinite}
+@keyframes shuf{25%{transform:translateX(-7px) rotate(-4deg)}75%{transform:translateX(7px) rotate(4deg)}}
+.fxnote{position:fixed;left:50%;top:31%;transform:translateX(-50%);z-index:69;pointer-events:none;max-width:88vw;text-align:center;padding:10px 18px;border-radius:22px;background:#0b0f16f2;border:1.5px solid #d9b25f;color:#ffe6a8;font:700 15px/1.25 'Cinzel',serif;box-shadow:0 8px 24px #000a;animation:capin .3s ease-out}
+.fxnote.found{border-color:#7dffa0;color:#c9ffd8}
 .arena .acts .util{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .arena .acts .util .menub{flex:none;min-height:34px;padding:0 16px;border-radius:17px;background:#0b0f16cc;border:1.5px solid #4a5366;color:#c9d0dc;font-size:13px;font-weight:700}
 .arena .acts .util .btn.undo{align-self:auto;margin-left:auto}
@@ -1047,7 +1052,7 @@ TRIG.etb = function (t) {
   if (c === 'woodelves') {
     var L = G.p[p].lib, k = -1;
     for (var n = 0; n < L.length; n++) { if (I(L[n]).c === 'forest') { k = n; break; } }
-    if (k >= 0) { var f = L.splice(k, 1)[0]; shuffle(L); enter(f, p, { quiet: 1 }); log('Wood Elves fetches a Forest.', p); } else { shuffle(L); }
+    if (k >= 0) { var f = L.splice(k, 1)[0]; shuffle(L); enter(f, p, { quiet: 1 }); I(f).fetch = 1; log('Wood Elves finds a Forest and puts it onto the battlefield.', p); } else { shuffle(L); log('Wood Elves finds no Forest in the library.', p); }
   }
   if (c === 'crow') mill(p, 2);
   if (c === 'supplier') mill(p, 3);
@@ -2614,7 +2619,8 @@ function flipCapture(root) {
     var r = el.getBoundingClientRect(); if (!r.width) return;
     m[el.dataset.u] = { cx: r.left + r.width / 2, cy: r.top + r.height / 2, w: el.offsetWidth, h: el.offsetHeight, t: getComputedStyle(el).transform, z: zoneOfEl(el) };
   });
-  var lib = root.querySelector('.pl.me .pile'), oh = root.querySelector('.ohand');
+  var lib = root.querySelector('.pl.me .pile'), oh = root.querySelector('.ohand'), olib = root.querySelector('.pl.opp .pile');
+  if (olib) { var olr = olib.getBoundingClientRect(); m._olib = { cx: olr.left + olr.width / 2, cy: olr.top + olr.height / 2, w: 60, h: 84, t: 'none', z: 'lib' }; }
   if (lib) { var lr = lib.getBoundingClientRect(); m._lib = { cx: lr.left + lr.width / 2, cy: lr.top + lr.height / 2, w: 60, h: 84, t: 'none', z: 'lib' }; }
   if (oh) { var orr = oh.getBoundingClientRect(); m._oh = { cx: orr.left, cy: Math.max(10, orr.top + 30), w: 68, h: 95, t: 'none', z: 'oh' }; }
   return m;
@@ -2644,7 +2650,7 @@ function flyClone(el, from, ncx, ncy, s, dur, viaCenter, delay) {
 function flipApply(root, m) {
   U.fxDelay = 0; U.flights = U.flights || {};
   if (!domOk() || !root || !m || U.screen !== 'game' || !G) return;
-  var s = (U.stage && U.stage.s) || 1, sp = spd(), now = Date.now(), end = now, k = 0, castMs = 0;
+  var s = (U.stage && U.stage.s) || 1, sp = spd(), now = Date.now(), end = now, k = 0, castMs = 0, fetchEls = [];
   var moveDur = Math.round(520 * sp + 160), castDur = Math.round(1700 * sp + 250);
   var mineFirst = !m._lib && !m._oh;
   [].forEach.call(root.querySelectorAll('.arena .card[data-u]'), function (el) {
@@ -2652,6 +2658,8 @@ function flipApply(root, m) {
     if (U.flights[u] > now) { el.style.visibility = 'hidden'; setTimeout(function () { var c = document.querySelector('.arena .card[data-u="' + u + '"]'); if (c) c.style.visibility = ''; }, U.flights[u] - now + 30); return; }
     var r = el.getBoundingClientRect(); if (!r.width) return;
     var ncx = r.left + r.width / 2, ncy = r.top + r.height / 2, i = G.i[u];
+    var fetched = false;
+    if (!o && i && i.fetch && z === 'bf') { o = i.o === me() ? m._lib : m._olib; fetched = !!o; if (fetched) fetchEls.push(el); }
     if (!o) {
       if (mineFirst) return;
       if (z === 'hand') o = m._lib;
@@ -2664,6 +2672,11 @@ function flipApply(root, m) {
       // the death ghost carries it there; the graveyard card fades in afterwards
       el.animate([{ opacity: 0 }, { opacity: 0, offset: .8 }, { opacity: 1 }], { duration: Math.round(1300 * sp + 300), easing: 'ease-out' });
       return;
+    }
+    if (fetched) {
+      var fd = Math.round(520 * sp + 160) + Math.round(500 * sp + 200), fdur = Math.round(1500 * sp + 250);
+      flyClone(el, o, ncx, ncy, s, fdur, true, fd);
+      end = Math.max(end, now + fd + fdur); return;
     }
     if (o.z !== z) {
       var via = (o.z === 'hand' || o.z === 'oh') && !land && z !== 'hand';
@@ -2681,10 +2694,23 @@ function flipApply(root, m) {
     el.animate([{ transform: 'translate(' + dx + 'px,' + dy + 'px) ' + (o.t === 'none' ? '' : o.t) }, { transform: nt === 'none' ? 'none' : nt }], { duration: moveDur, delay: d2, easing: 'cubic-bezier(.25,.8,.25,1)', fill: 'backwards' });
     end = Math.max(end, now + d2 + moveDur);
   });
+  if (fetchEls.length) fetchFx(sp, end - now);
   U.fxDelay = castMs ? Math.round(castMs * .78) : 0;
   U.animUntil = Math.max(U.animUntil || 0, end);
   var ar = root.querySelector('.arena');
   if (ar && end > now + 50) { ar.classList.add('busy'); setTimeout(function () { var a2 = document.querySelector('.arena'); if (a2 && Date.now() >= (U.animUntil || 0) - 20) a2.classList.remove('busy'); }, end - now + 30); }
+}
+/* Wood Elves search: shake the library, say what is happening, then reveal the Forest */
+function fetchFx(sp, total) {
+  if (!domOk()) return;
+  var t1 = Math.round(520 * sp + 160) + Math.round(500 * sp + 200);
+  var piles = document.querySelectorAll('.arena .pl .pile');
+  [].forEach.call(piles, function (pl) { pl.classList.add('shuf'); setTimeout(function () { pl.classList.remove('shuf'); }, t1 + 100); });
+  var e = document.createElement('div'); e.className = 'fxnote';
+  e.innerHTML = '<span>Wood Elves: searching the library for a Forest…</span>';
+  document.body.appendChild(e);
+  setTimeout(function () { e.className = 'fxnote found'; e.innerHTML = '<span>Found a Forest! It enters the battlefield.</span>'; }, t1);
+  setTimeout(function () { if (e.parentNode) e.parentNode.removeChild(e); }, total + 200);
 }
 /* life counts down instead of jumping */
 function lifeTween(root) {
@@ -3147,7 +3173,7 @@ function sheetMenu() {
     '<button class="btn" data-act="rulesSheet">Rules reminder</button>' +
     (G.mode !== 'puzzle' && G.mode !== 'tut' && !G.over ? '<button class="btn dng" data-act="concede">Concede</button>' : '') +
     '<button class="btn ghost" data-act="leave">Leave game</button>' +
-    '<button class="btn ghost" data-act="closeSheet">Close</button></div></div>';
+    '<button class="btn ghost" data-act="closeSheet">Close</button><div style="text-align:center;font-size:11px;color:#6f7a8c">Version 2026-11-08b</div></div></div>';
 }
 function sheetRules() {
   return '<div class="bk" data-act="closeSheet"></div><div class="sh"><h3>Rules reminder</h3><ol class="ol">' + CHEAT.map(function (c) { return '<li>' + c + '</li>'; }).join('') +
