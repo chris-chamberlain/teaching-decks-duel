@@ -2536,7 +2536,7 @@ function bOppHand() {
   for (var k = 0; k < Math.min(n, 10); k++) { var t = k - (Math.min(n, 10) - 1) / 2; h += '<div class="back" style="transform:translateX(' + (t * 30) + 'px) rotate(' + (-t * 4) + 'deg)"></div>'; }
   return '<div class="ohand">' + h + (n ? '<div class="ohn">' + n + '</div>' : '') + '</div>';
 }
-function payLeft(pd) {
+function payPips(pd) {
   var rm = payRemain(pd.need, pd.pool || []), left = '';
   if (rm.g) left += rm.g;
   ['W', 'U', 'B', 'R', 'G'].forEach(function (c) { for (var k = 0; k < rm.c[c]; k++) left += c; });
@@ -2544,7 +2544,7 @@ function payLeft(pd) {
 }
 function bStack() {
   var pp = myPend();
-  if (pp && pp.k === 'pay' && G.cast && !G.stack.length) return '<div class="stk paying"><div class="cap">Waiting for mana</div>' + cardHTML(null, 'md', { cid: G.cast.c, act: 'none' }) + '<div class="cap sub costp">' + payLeft(pp) + '</div></div>';
+  if (pp && pp.k === 'pay' && G.cast && !G.stack.length) return '<div class="stk paying"><div class="cap">Waiting for mana</div>' + cardHTML(null, 'md', { cid: G.cast.c, act: 'none' }) + '<div class="cap sub costp">' + payPips(pp) + '</div></div>';
   if (!G.stack.length) return '';
   var s = G.stack[G.stack.length - 1];
   return '<div class="stk"><div class="cap">' + esc(pn(s.p)) + ' casts</div>' + cardHTML(null, 'md', { cid: s.c, act: 'none' }) +
