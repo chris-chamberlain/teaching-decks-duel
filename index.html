@@ -2265,7 +2265,7 @@ var SND = (function () {
     noiseBuf = nb;
     vols();
     if (ac.state === 'suspended') ac.resume();
-    if (on.m && mood) startMusic();
+    if (on.m && mood) begin();
   }
   function vols() {
     if (!ac) return;
@@ -2360,11 +2360,27 @@ var SND = (function () {
     musG.gain.setValueAtTime(0, ac.currentTime); musG.gain.setTargetAtTime(on.m ? .42 : 0, ac.currentTime + .1, 1.2);
     tick(); timer = setInterval(tick, 150);
   }
-  function stopMusic() { if (timer) { clearInterval(timer); timer = null; } }
+  function stopMusic() { if (timer) { clearInterval(timer); timer = null; } if (au) au.pause(); }
+  /* recorded tracks, played in turn; the generated music is the fallback if a file will not load */
+  var TRACKS = ['music/oak-tankard-overture.mp3', 'music/medieval-fantasy.mp3'], ti = 0, au = null, auFail = false;
+  function fileMusic() {
+    if (auFail || !on.m || !mood) return false;
+    try {
+      if (!au) {
+        au = new Audio(); au.preload = 'auto'; au.volume = .5;
+        au.addEventListener('ended', function () { ti = (ti + 1) % TRACKS.length; au.src = TRACKS[ti]; var q = au.play(); if (q && q.catch) q.catch(function () { }); });
+        au.addEventListener('error', function () { auFail = true; au = null; if (on.m && mood && ac) startMusic(); });
+        au.src = TRACKS[ti];
+      }
+      var pr = au.play(); if (pr && pr.catch) pr.catch(function () { });
+      return true;
+    } catch (e) { auFail = true; return false; }
+  }
+  function begin() { if (timer) { clearInterval(timer); timer = null; } if (!fileMusic() && ac) startMusic(); }
   function music(m) {
     if (m === mood) return;
     mood = m;
-    if (ac && on.m && m) { if (!timer) startMusic(); else { nextT = Math.max(nextT, ac.currentTime + .1); } }
+    if (on.m && m) begin();
   }
   /* ---------- effects ---------- */
   function tone(t, f, dur, type, vel, to) {
@@ -2400,13 +2416,13 @@ var SND = (function () {
     var n = ac.currentTime; if (last[name] && n - last[name] < .05) return; last[name] = n;
     try { FX[name](n + .005, arg); } catch (e) { }
   }
-  document.addEventListener('visibilitychange', function () { if (!ac) return; if (document.hidden) ac.suspend(); else ac.resume(); });
+  document.addEventListener('visibilitychange', function () { if (au) { if (document.hidden) au.pause(); else if (on.m && mood) { var q = au.play(); if (q && q.catch) q.catch(function () { }); } } if (!ac) return; if (document.hidden) ac.suspend(); else ac.resume(); });
   ['touchend', 'pointerup', 'click', 'keydown'].forEach(function (ev) { document.addEventListener(ev, init, { passive: true }); });
   return {
     init: init, sfx: sfx, music: music,
     _t: function (n, m, fx) { var M = m === 'tense' ? TENSE : CALM, e = 60 / M.bpm / 2; nextT = .1; bar = 0; for (var i = 0; i < n; i++) { playBar(nextT, M); nextT += e * 8; } (fx || []).forEach(function (f, k) { FX[f[0]](.5 + k * .8, f[1]); }); return ac; },
     get musicOn() { return on.m; }, get sfxOn() { return on.s; },
-    setMusic: function (v) { on.m = !!v; save(); if (ac) { vols(); if (on.m && mood) startMusic(); else if (!on.m) { setTimeout(function () { if (!on.m) stopMusic(); }, 1500); } } },
+    setMusic: function (v) { on.m = !!v; save(); if (ac) { vols(); if (on.m && mood) begin(); else if (!on.m) { setTimeout(function () { if (!on.m) stopMusic(); }, 1500); } } else if (on.m && mood) begin(); else if (au) au.pause(); },
     setSfx: function (v) { on.s = !!v; save(); vols(); if (on.s) sfx('tick'); }
   };
 })();
@@ -3179,7 +3195,7 @@ function sheetMenu() {
     '<button class="btn" data-act="rulesSheet">Rules reminder</button>' +
     (G.mode !== 'puzzle' && G.mode !== 'tut' && !G.over ? '<button class="btn dng" data-act="concede">Concede</button>' : '') +
     '<button class="btn ghost" data-act="leave">Leave game</button>' +
-    '<button class="btn ghost" data-act="closeSheet">Close</button><div style="text-align:center;font-size:11px;color:#6f7a8c">Version 2026-11-08c</div></div></div>';
+    '<button class="btn ghost" data-act="closeSheet">Close</button><div style="text-align:center;font-size:11px;color:#6f7a8c">Version 2026-11-08d</div></div></div>';
 }
 function sheetRules() {
   return '<div class="bk" data-act="closeSheet"></div><div class="sh"><h3>Rules reminder</h3><ol class="ol">' + CHEAT.map(function (c) { return '<li>' + c + '</li>'; }).join('') +

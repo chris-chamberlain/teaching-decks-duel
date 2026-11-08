@@ -8,4 +8,12 @@ Play: https://chris-chamberlain.github.io/teaching-decks-duel/
 - One device, take turns, is also available.
 - On iPhone, use Share, then Add to Home Screen.
 
+## Music
+
+Two recorded tracks in `music/` play in turn (Oak Tankard Overture, Medieval Fantasy). The generated music is the fallback if a file will not load.
+
+## Open items
+
+- Music: choose a theme track for each deck (Green, Red, White, Black, Blue), starting from the Pixabay "renaissance fair" search (https://pixabay.com/music/search/renaissance%20fair/). Decide how tracks switch (per deck, per screen, or per turn), loop or crossfade behaviour, and check licences before adding files.
+
 Card art is from the owner's own proxy sheets. Magic: The Gathering is a trademark of Wizards of the Coast. Fan project for personal, non-commercial use.
