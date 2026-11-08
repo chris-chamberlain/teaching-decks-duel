@@ -452,7 +452,7 @@ input.code{text-transform:uppercase;letter-spacing:.35em;text-align:center;font-
 .arena .acts .sec .btn{flex:1 1 auto;width:auto;min-height:36px;font-size:13px;padding:0 12px;border-radius:18px;background:linear-gradient(#2d3442,#171b24);border:1.5px solid #6f7a8c;color:#dfe4ee}
 .arena .acts .btn.pri{flex:none;min-height:60px;border-radius:30px;border:2px solid #ffd59a;background:linear-gradient(#ffb347,#e2731f 55%,#b34c12);color:#2a1204;
   font:700 20px/1 'Cinzel',serif;letter-spacing:.03em;box-shadow:0 0 0 4px #00000066,0 0 26px 4px #ff8a2a66,inset 0 2px 0 #fff6}
-.arena .acts .btn.undo{flex:none;align-self:flex-end;width:auto;min-height:34px;padding:0 18px;border-radius:17px;background:#0b0f16cc;border:1.5px solid #4a5366;color:#c9d0dc;font-size:13px}
+.arena .acts .btn.undo{flex:none;align-self:flex-end;width:auto;min-height:44px;padding:0 20px;border-radius:22px;background:#0b0f16cc;border:1.5px solid #4a5366;color:#c9d0dc;font-size:13px}
 
 /* overlay */
 .arena .ovl{position:absolute;inset:0;pointer-events:none;z-index:9}
@@ -495,7 +495,7 @@ input.code{text-transform:uppercase;letter-spacing:.35em;text-align:center;font-
 .fxnote{position:fixed;left:50%;top:31%;transform:translateX(-50%);z-index:69;pointer-events:none;max-width:88vw;text-align:center;padding:10px 18px;border-radius:22px;background:#0b0f16f2;border:1.5px solid #d9b25f;color:#ffe6a8;font:700 15px/1.25 'Cinzel',serif;box-shadow:0 8px 24px #000a;animation:capin .3s ease-out}
 .fxnote.found{border-color:#7dffa0;color:#c9ffd8}
 .arena .acts .util{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.arena .acts .util .menub{flex:none;min-height:34px;padding:0 16px;border-radius:17px;background:#0b0f16cc;border:1.5px solid #4a5366;color:#c9d0dc;font-size:13px;font-weight:700}
+.arena .acts .util .menub{flex:none;min-height:48px;padding:0 24px;border-radius:24px;background:#0b0f16cc;border:2px solid #6f7a8c;color:#e6ebf4;font-size:17px;font-weight:700}
 .arena .acts .util .btn.undo{align-self:auto;margin-left:auto}
 .arena .stk.paying .card{animation:payglow 1s ease-in-out infinite}
 @keyframes payglow{50%{box-shadow:0 0 0 4px #7dffa0,0 0 34px 12px #7dffa0aa,0 12px 26px #000;transform:scale(1.06)}}
@@ -3195,7 +3195,7 @@ function sheetMenu() {
     '<button class="btn" data-act="rulesSheet">Rules reminder</button>' +
     (G.mode !== 'puzzle' && G.mode !== 'tut' && !G.over ? '<button class="btn dng" data-act="concede">Concede</button>' : '') +
     '<button class="btn ghost" data-act="leave">Leave game</button>' +
-    '<button class="btn ghost" data-act="closeSheet">Close</button><div style="text-align:center;font-size:11px;color:#6f7a8c">Version 2026-11-08d</div></div></div>';
+    '<button class="btn ghost" data-act="closeSheet">Close</button><div style="text-align:center;font-size:11px;color:#6f7a8c">Version 2026-11-08e</div></div></div>';
 }
 function sheetRules() {
   return '<div class="bk" data-act="closeSheet"></div><div class="sh"><h3>Rules reminder</h3><ol class="ol">' + CHEAT.map(function (c) { return '<li>' + c + '</li>'; }).join('') +
